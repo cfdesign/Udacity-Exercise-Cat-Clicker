@@ -1,0 +1,11 @@
+body {
+	text-align: center;
+}
+
+#cat-name, #cat-clicks {
+	margin: 20px;
+}
+
+#cat-viewer img {
+	max-width: 600px;
+}

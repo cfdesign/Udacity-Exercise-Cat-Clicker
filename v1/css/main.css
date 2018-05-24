@@ -1,0 +1,7 @@
+.clicks, .cat {
+	display: none;
+}
+
+.show .clicks, .show .cat {
+	display: block;
+}
