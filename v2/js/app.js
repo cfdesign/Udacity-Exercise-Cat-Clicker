@@ -10,7 +10,7 @@ const cats = [
 ];
 ///Model end
 //Controller
-(function buttons() {
+function buttons(catId) {
 	const buttonsFrag = document.createDocumentFragment();
 	let index = 0;
 	for (const cat of cats) {
@@ -21,29 +21,47 @@ const cats = [
 		++ index
 	}
 	createButtons(buttonsFrag);
-	fetchCat(0);
-}());
+	fetchCat(catId);
+};
 
-function fetchCat (buttonNumber) {
+function fetchCat (catId) {
 	const viewFrag = document.createDocumentFragment(),
 	viewer = document.createElement('div');
 	viewer.id = 'cat-viewer';
-	viewer.innerHTML = `<div id="cat-name">${cats[buttonNumber].name}</div>
-						<div id="cat-clicks">${cats[buttonNumber].clicks} clicks</div>
-						<img id="${buttonNumber}" src="${cats[buttonNumber].image}" alt="This is ${cats[buttonNumber].name} the cat">`;
+	viewer.innerHTML = `<div id="cat-info">
+							<div id="cat-name">${cats[catId].name}</div>
+							<div id="cat-clicks">${cats[catId].clicks} clicks</div>
+						</div>
+						<form id="cat-form" style="display: none;">
+							Name:<input id="cat-form-name" type="text" name="Name" value="${cats[catId].name}">
+							<br>
+							Clicks:<input id="cat-form-clicks" type="number" name="clicks" value="${cats[catId].clicks}">
+							<br>
+							<input type="submit" value="Save">
+  							<input type="reset" value="Cancel">
+						</form>
+						<div><button id="admin">Admin</button></div>
+						<img id="${catId}" class="cat-image" src="${cats[catId].image}" alt="This is ${cats[catId].name} the cat">`;
 	viewFrag.appendChild(viewer);
 	viewCat(viewFrag);
 };
 
-function addClicks (number) {
-	++ cats[number].clicks;
-	showClicks(cats[number].clicks);
+function addClicks (catId) {
+	++ cats[catId].clicks;
+	return buttons(catId);
 }
+
+function addInput (catId, name, clicks) {
+	cats[catId].clicks = clicks;
+	cats[catId].name = name;
+	return buttons(catId);
+}
+
 //Controller end
 //View
 function createButtons(buttonsFrag) {
 	const catButtons = document.getElementById('cat-buttons');
-
+	catButtons.innerHTML = '';
 	catButtons.appendChild(buttonsFrag);
 	catButtons.addEventListener('click', function (evt){
 		const target = evt.target;
@@ -62,11 +80,50 @@ function viewCat(viewFrag) {
 		catsContainer.removeChild(catViewer);
 	}
 	catsContainer.appendChild(viewFrag);
-	document.getElementById('cat-viewer').children[2].addEventListener('click', function (evt){
+
+	document.querySelector('.cat-image').addEventListener('click', function (evt){
 		addClicks(parseInt(this.id));
 	});
-}
+	document.getElementById('admin').addEventListener('click', function() {
+		const catInfo = document.getElementById('cat-info'),
+		catForm = document.getElementById('cat-form');
 
-function showClicks (update) {
-	document.getElementById('cat-viewer').children[1].innerHTML = `${update} clicks`;
+		if (catForm.style.display === "none") {
+			catInfo.style.display = "none";
+			catForm.style.display = "block";
+			catForm.addEventListener('submit', function(e){
+				const catFormName = document.getElementById('cat-form-name').value,
+				catFormClicks = document.getElementById('cat-form-clicks').value,
+				catId = document.querySelector('.cat-image').id;
+				e.preventDefault();
+				addInput(parseInt(catId), catFormName, parseInt(catFormClicks));
+				//document.getElementById('admin').click();
+			});
+			catForm.addEventListener('reset', function(e){
+				document.getElementById('admin').click();
+			});
+
+		} else {
+			catInfo.style.display = "block";
+			catForm.style.display = "none";
+		}
+	});
 }
+buttons(0);
+//function showClicks (update) {
+//	document.getElementById('cat-clicks').innerHTML = `${update} clicks`;
+//	document.getElementById('cat-form-clicks').value = update;
+
+//}
+//function changeName (id, name) {
+//	document.getElementById(`${id}`).innerHTML = `${name}`;
+//	document.getElementById(`${id}`).innerHTML = `${name}`;
+//}
+
+
+
+//function viewAdmin(adminFrag) {
+	//catViewer = document.getElementById('cat-viewer');
+	//catViewer.insertBefore(adminFrag, catViewer.childNodes[0])
+
+//}
