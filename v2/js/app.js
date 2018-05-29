@@ -33,22 +33,23 @@ function fetchCat (catId) {
 							<div id="cat-clicks">${cats[catId].clicks} clicks</div>
 						</div>
 						<form id="cat-form" style="display: none;">
-							Name:<input id="cat-form-name" type="text" name="Name" value="${cats[catId].name}">
+							Name: <input id="cat-form-name" type="text" name="Name" value="${cats[catId].name}" required="required">
 							<br>
-							Clicks:<input id="cat-form-clicks" type="number" name="clicks" value="${cats[catId].clicks}">
+							Clicks: <input id="cat-form-clicks" type="number" name="clicks" value="${cats[catId].clicks}" required="required">
 							<br>
 							<input type="submit" value="Save">
   							<input type="reset" value="Cancel">
 						</form>
-						<div><button id="admin">Admin</button></div>
+						<div class="admin"><button id="admin">Admin</button></div>
 						<img id="${catId}" class="cat-image" src="${cats[catId].image}" alt="This is ${cats[catId].name} the cat">`;
 	viewFrag.appendChild(viewer);
 	viewCat(viewFrag);
+	return adminbutton();
 };
 
 function addClicks (catId) {
 	++ cats[catId].clicks;
-	return buttons(catId);
+	return fetchCat(catId);
 }
 
 function addInput (catId, name, clicks) {
@@ -65,7 +66,6 @@ function createButtons(buttonsFrag) {
 	catButtons.appendChild(buttonsFrag);
 	catButtons.addEventListener('click', function (evt){
 		const target = evt.target;
-
 		if (target.tagName == 'BUTTON') {
 			fetchCat(parseInt(target.id));
 		}
@@ -84,46 +84,37 @@ function viewCat(viewFrag) {
 	document.querySelector('.cat-image').addEventListener('click', function (evt){
 		addClicks(parseInt(this.id));
 	});
-	document.getElementById('admin').addEventListener('click', function() {
+}
+
+function adminbutton(){
+	document.getElementById('admin').addEventListener('click', function(e) {
 		const catInfo = document.getElementById('cat-info'),
 		catForm = document.getElementById('cat-form');
 
-		if (catForm.style.display === "none") {
-			catInfo.style.display = "none";
-			catForm.style.display = "block";
-			catForm.addEventListener('submit', function(e){
-				const catFormName = document.getElementById('cat-form-name').value,
-				catFormClicks = document.getElementById('cat-form-clicks').value,
-				catId = document.querySelector('.cat-image').id;
-				e.preventDefault();
-				addInput(parseInt(catId), catFormName, parseInt(catFormClicks));
-				//document.getElementById('admin').click();
-			});
-			catForm.addEventListener('reset', function(e){
-				document.getElementById('admin').click();
-			});
-
-		} else {
-			catInfo.style.display = "block";
-			catForm.style.display = "none";
-		}
+		catInfo.style.display = "none";
+		catForm.style.display = "block";
+		document.querySelector('.admin').style.display = "none"
+		return formButtons();
 	});
 }
+
+function formButtons() {
+	const catForm = document.getElementById('cat-form'),
+	catInfo = document.getElementById('cat-info'),
+	catId = document.querySelector('.cat-image').id;
+
+	catForm.addEventListener('submit', function(e){
+		const catFormName = document.getElementById('cat-form-name').value,
+		catFormClicks = document.getElementById('cat-form-clicks').value;
+		e.preventDefault();
+		addInput(parseInt(catId), catFormName, parseInt(catFormClicks));
+	});
+
+	catForm.addEventListener('reset', function(){
+		document.querySelector('.admin').style.display = "block";
+		catInfo.style.display = "block";
+		catForm.style.display = "none";
+	});
+}
+
 buttons(0);
-//function showClicks (update) {
-//	document.getElementById('cat-clicks').innerHTML = `${update} clicks`;
-//	document.getElementById('cat-form-clicks').value = update;
-
-//}
-//function changeName (id, name) {
-//	document.getElementById(`${id}`).innerHTML = `${name}`;
-//	document.getElementById(`${id}`).innerHTML = `${name}`;
-//}
-
-
-
-//function viewAdmin(adminFrag) {
-	//catViewer = document.getElementById('cat-viewer');
-	//catViewer.insertBefore(adminFrag, catViewer.childNodes[0])
-
-//}
