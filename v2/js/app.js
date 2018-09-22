@@ -15,7 +15,7 @@ function buttons(catId) {
 	let index = 0;
 	for (const cat of cats) {
         const newCatButton = document.createElement('button');
-        newCatButton.id = index;
+        newCatButton.className = index;
         newCatButton.innerHTML = `${cat.name}`;
 		buttonsFrag.appendChild(newCatButton);
 		++ index
@@ -67,7 +67,7 @@ function createButtons(buttonsFrag) {
 	catButtons.addEventListener('click', function (evt){
 		const target = evt.target;
 		if (target.tagName == 'BUTTON') {
-			fetchCat(parseInt(target.id));
+			fetchCat(parseInt(target.className));
 		}
 	});
 }
